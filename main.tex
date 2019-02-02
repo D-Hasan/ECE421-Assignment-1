@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[letterpaper, margin=1in]{geometry}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\title{ECE421: Assignment 1}
+\author{AnnaL. Deza and Danial Hasan }
+\date{February 6, 2019}
+
+\begin{document}
+
+\maketitle
+
+\section*{Assumptions}
+In this report, we will refer to various matrices that represent the model weights ($W$), bias ($b$), training data ($\mathbf{X}$), and training targets ($y$). The original data represents 2D images, and thus comes in $28\times28$ matrices. These matrices are \textit{flattened} to yield data vectors $\mathbf{x}^{(n)}\in \R^{d}$, where $d = 784 = 28\times28, \ n \in [1, N] \ \mathrm{where} \ N=3500$, the number of training samples. 
+
+Below
+
+\section{Linear Regression}
+
+\subsection{MSE Loss Function and Gradient}
+The MSE Loss function is defined in \ref{eq:MSE} and the code implementing it is shown in Figure \ref{}.
+\begin{equation} \label{eq:MSE}
+    \begin{split}
+        \mathcal{L} & = \mathcal{L}_D + \mathcal{L}_W \\
+          & = \sum_{n=1}^{N} \frac{1}{2N} 
+          \lVert W^T\mathbf{x}^{(n)}+b-y^{(n)} \rVert_{2}^{2} 
+          + \frac{\lambda}{2} \lVert W \rVert_{2}^{2} \\
+          & = \frac{1}{2N}(\mathbf{X}^TW + b - y) + \frac{\lambda}{2} \lVertW W \rVert_{2}^2
+    \end{split}
+\end{equation}
+The gradient of the MSE Loss with respect to the weights is defined in (\ref{eq:MSE_L_W}):
+\begin{equation} \label{eq:MSE_L_W}
+    \nabla_{\mathbf{W}}\mathcal{L}_D = \frac{1}{N} \mathbf{X}\mathbf{a} \
+    \textrm{where} \ 
+    \mathbf{a} = \begin{bmatrix}
+        W^{T}\mathbf{x}^{(1)}+b-y^{(1)} \\ \vdots \\ W^{T}\mathbf{x}^{(N)}+b-y^{(N)} 
+    \end{bmatrix} \
+    \in \R^{N} \textrm{and} \ \mathbf{X} \in \R^{d \times N}
+\end{equation}   
+And with respect to the weight decay is defined in (\ref{eq:MSE_L_D}):
+\begin{equation} \label{eq:MSE_L_D}
+    \nabla_{\mathbf{W}}\mathcal{L}_W = \lambda \mathbf{W}
+\end{equation}
+Therefore the total gradient with respect to the weights $\mathbf{W}$ is defined in (\ref{eq:MSE_L}):
+\begin{equation} \label{eq:MSE_L}
+    \nabla_{\mathbf{W}}\mathcal{L} = \nabla_\mathbf{W}(\mathcal{L}_W + \mathcal{L}_D) = \frac{1}{N}\mathbf{X}\mathbf{a} + \lambda \mathbf{W}
+\end{equation}
+For the bias $\mathbf{b}$ the gradient is defined in (\ref{eq:MSE_L_B}):
+\begin{equation} \label{eq:MSE_L_B}
+    \nabla_\mathbf{b}\mathcal{L} = 
+    \frac{1}{N} \sum_{n=1}^{N} W^{T}\mathbf{x}^{(n)}+b-y^{(n)}
+    = \frac{1}{N} \mathbf{1}_N^T\mathbf{a} \ \textrm{where} \ \mathbf{1}_N \in \R^N
+\end{equation}
+
+\section{Logistic Regression}
+\subsection{Cross Entropy Loss Function and Gradient}
+The Cross Entropy Loss function defined in (\ref{eq:CE}) utilizes the sigmoid function, defined in  (\ref{eq:sigmoid}) , where the model output is defined as $\hat{y}=\sigma(W^T\mathbf{x})$. The code implementing the calculation of Cross Entropy Loss is defined in Figure \ref{}. 
+
+\begin{equation} \label{eq:sigmoid}
+    \sigma(x)=\frac{1}{1+e^{-x}}
+\end{equation}
+
+\begin{equation} \label{eq:CE}
+    \begin{split}
+        \mathcal{L} & = \mathcal{L}_D + \mathcal{L}_W \\
+          & = \sum_{n=1}^{N} \frac{1}{N} 
+          \Big[-y^{(n)}\log\hat{y}(\mathbf{x}^{(n)}) 
+          - (1-y^{(n)})\log(1-\hat{y}(\mathbf{x}^{(n)})) \Big] + 
+          \frac{\lambda}{2} \lVert W \rVert_{2}^{2}
+    \end{split}
+\end{equation}
+The gradient of Cross Entropy Loss with respect to the weights is defined in (\ref{eq:CE_L_W}):
+\begin{equation} \label{eq:CE_L_W}
+    \nabla_{W}\mathcal{L}_W = -\frac{1}{N}\mathbf{X}\varepsilon \ \textrm{where} \ \varepsilon=y-\hat{y} \in \R^N
+\end{equation}
+And with respect to the weight decay is equivalent to (\ref{eq:MSE_L_D}). Therefore the total gradient with respect to the weights is shown in (\ref{eq:CE_L}):
+\begin{equation} \label{eq:CE_L}
+    \nabla_{\mathbf{W}}\mathcal{L} = \nabla_\mathbf{W}(\mathcal{L}_W + \mathcal{L}_D) = -\frac{1}{N}\mathbf{X}\varepsilon + \lambda \mathbf{W}
+\end{equation}
+The gradient with respect to the bias is shown in (\ref{eq:CE_L_B}):
+\begin{equation} \label{eq:CE_L_B}
+    \nabla_{\mathbf{b}}\mathcal{L} =
+    -\frac{1}{N}\sum_{n=1}^{N} y^{(n)} - \hat{y}^{(n)}
+    = -\frac{1}{N}\mathbf{1}_N^T\varepsilon
+\end{equation}
+
+
+\end{document}
